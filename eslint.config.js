@@ -1,21 +1,32 @@
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  // 1. Tell ESLint to ignore the 'dist' folder (compiled code)
+  { ignores: ['dist'] },
+
   {
     files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
+    plugins: {
+      'react-hooks': reactHooks,
+    },
     languageOptions: {
+      // Use browser variables like 'window' or 'document'
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Standard JavaScript "best practice" rules
+      ...js.configs.recommended.rules,
+      
+      // Important React Hook rules
+      'react-hooks/rules-of-hooks': 'error',   // Error: Hooks must be at the top level
+      'react-hooks/exhaustive-deps': 'warn',  // Warning: Check your useEffect dependencies
+      
+      // General cleanup rules
+      'no-unused-vars': 'warn',   // Warns you if you create a variable but don't use it
+      'no-console': 'off',        // Allows you to use console.log during your assignment
+    },
   },
-])
+]
